@@ -641,6 +641,20 @@
   var ytPlayer;
   var ytReady = false;
 
+  /* Safari fix: watch for the iframe the YT API injects and add allow="autoplay" */
+  var ytObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (m) {
+      m.addedNodes.forEach(function (node) {
+        if (node.tagName === 'IFRAME') {
+          node.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+          node.setAttribute('allowfullscreen', '');
+          ytObserver.disconnect();
+        }
+      });
+    });
+  });
+  ytObserver.observe(document.getElementById('ytplayer'), { childList: true });
+
   /* Inject the YouTube IFrame API script */
   (function () {
     var tag = document.createElement('script');
